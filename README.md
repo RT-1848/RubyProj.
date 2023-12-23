@@ -1,1 +1,1 @@
-# RubyProj.
+Just Projects
