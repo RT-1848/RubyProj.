@@ -1,0 +1,208 @@
+# Student class that contains all student information
+class Student
+  # Setters for Private Members
+  def setID(id)
+    @ID = id
+  end
+
+  def setCLA(cla)
+    @CLA = cla.to_i
+  end
+
+  def setOLA(ola)
+    @OLA = ola.to_i
+  end
+
+  def setQuiz(quiz)
+    @Quiz = quiz.to_i
+  end
+
+  def setExam(exam)
+    @Exam = exam.to_i
+  end
+
+  def setFE(fe)
+    @FE = fe.to_i
+  end
+
+  # Getters for Private Members
+  def getID
+    @ID
+  end
+
+  def getCLA
+    @CLA
+  end
+
+  def getOLA
+    @OLA
+  end
+
+  def getQuiz
+    @Quiz
+  end
+
+  def getExam
+    @Exam
+  end
+
+  def getFE
+    @FE
+  end
+
+  # Function that calculates the Letter Grade for each student
+  def getfinal_grade
+    @ts = @CLA + @OLA + @Quiz + @Exam + @FE	# Add up every score and place into total_score(ts)
+
+    # If statement to decide the letter grade for each score given
+    if ts >= 90
+    	@letter = 'A'
+    elsif ts >= 87 && ts < 90
+      @letter = 'B+'
+    elsif ts >= 83 && ts < 87
+      @letter = 'B'
+    elsif ts >= 80 && ts < 83
+      @letter = 'B-'
+    elsif ts >= 77 && ts < 80
+      @letter = 'C+'
+    elsif ts >= 73 && ts < 77
+      @letter = 'C'
+    elsif ts >= 70 && ts < 73
+      @letter = 'C-'
+    elsif ts >= 67 && ts < 70
+      @letter = 'D+'
+    elsif ts >= 63 && ts < 67
+      @letter = 'D'
+    elsif ts >= 60 && ts < 63
+      @letter = 'D-'
+    else
+      @letter = 'F'
+    end
+    @letter
+  end
+
+  private
+	#Private Data Members
+  attr_reader :ID, :CLA, :OLA, :Quiz, :Exam, :FE, :letter, :ts
+end
+
+# Roster class that stores all students onto an array
+class Roster
+	# Initialize the student array object
+  def initialize
+    @students = {}
+  end
+
+  # Function to add students to the student array
+  def add_student(student)
+    @students[student.getID] = student
+  end
+
+  # Function to find students that are on the array
+  def find_student(studentid)
+    @students[studentid]
+  end
+
+	# Function that returns the roster of all students
+  def getroster
+    @students
+  end
+
+  # Function that calculates the average of each type of assignment score
+  def stats_average
+    num_students = @students.size	# Size of students array
+    cla_t = 0.0	# Intializing the total of each type of assignment to 0
+    ola_t = 0.0
+    quiz_t = 0.0
+    exam_t = 0.0
+    fe_t = 0.0
+
+    # Iterator for each student in the array
+    @students.each_value do |student|
+      cla_t += student.getCLA	# Adds all scores of each assignment to its specified variable
+      ola_t += student.getOLA
+      quiz_t += student.getQuiz
+      exam_t += student.getExam
+      fe_t += student.getFE
+    end
+
+    # Calculate the average of each assignment type
+    avg_cla = cla_t / num_students
+    avg_ola = ola_t / num_students
+    avg_quiz = quiz_t / num_students
+    avg_exam = exam_t / num_students
+    avg_fe = fe_t / num_students
+
+    # Prints out all the average scores and rounds to the nearest decimal point
+    print "\t#{avg_cla.round(1)}\t\t#{avg_ola.round(1)}\t#{avg_quiz.round(1)}\t\t#{avg_exam.round(1)}\t#{avg_fe.round(1)}"
+  end
+
+  # Function to find the highest score for each of the assignment types
+  def stats_highest
+    cla_h = 0	# Initializing the variables to 0
+    ola_h = 0
+    quiz_h = 0
+    exam_h = 0
+    fe_h = 0
+
+    # Iterator for the Student array
+    @students.each_value do |student|
+      cla_h = student.getCLA if cla_h < student.getCLA 					# if CLA score is higher then place into variable
+      ola_h = student.getOLA if ola_h < student.getOLA 					# if OLA score is higher then place into variable
+      quiz_h = student.getQuiz if quiz_h < student.getQuiz 			# if quiz score is higher then place into variable
+      exam_h = student.getExam if exam_h < student.getExam 			# if exam score is higher then place into variable
+      fe_h = student.getFE if fe_h < student.getFE							# if final exam score is higher then place into variable
+    end
+    print "\t#{cla_h}\t\t#{ola_h}\t\t#{quiz_h}\t\t#{exam_h}\t\t#{fe_h}"
+  end
+
+  private
+	#Private data members
+  attr_reader :students
+end
+
+# Asks the user for the file to read from
+print 'Enter the data file of Student Records:	'
+file_name = gets.chomp
+
+x = 0
+roster = Roster.new	# create a roster object array
+File.foreach(file_name).drop(1).each do |line|	# iterator that reads each line in the file and skips the header line
+  data = line.split.map(&:strip)	# splits the line into an array of strings and places into data
+  student = Student.new						# new student object
+  student.setID(data[0])					# Placing data into the student class member variables
+  student.setCLA(data[1])					
+  student.setOLA(data[2])
+  student.setQuiz(data[3])
+  student.setExam(data[4])
+  student.setFE(data[5])
+  roster.add_student(student)			# adds the new student into the roster
+end
+
+# while loop to query 2 times before printing out all of the information of every student
+x = 0
+while x < 2
+  print "Enter the student ID:\t"	# Asks user for the c# of student
+  student_id = gets.chomp
+  query = roster.find_student(student_id)	# calls roster function to find student and place into query variable
+
+  if query	# If student is found print out relevant information
+    puts "C#\t\t\tCLA \tOLA \tQuiz \tExam \tFinalExam"	# Heading of the table
+    puts "#{query.getID}\t#{query.getCLA}\t\t#{query.getOLA}\t\t#{query.getQuiz}\t\t#{query.getExam}\t\t#{query.getFE}\t   #{query.getfinal_grade}\n\n"
+  else	# If student is not found print out error
+    puts "Student not found \n\n"
+  end
+  x += 1
+end
+
+# heading for the table of all students
+puts 'Printing out information of all students'
+puts "C#\t\t\tCLA \tOLA \tQuiz \tExam \tFinalExam"
+roster.getroster.each_value do |student|	# Iterator for the students in the roster and prints out all information for each student
+  puts "#{student.getID}\t#{student.getCLA}\t\t#{student.getOLA}\t\t#{student.getQuiz}\t\t#{student.getExam}\t\t#{student.getFE}\t   #{student.getfinal_grade}\n"
+end
+
+print "\nAverage: "								# Print out the average score of each assignment type
+roster.stats_average
+print "\nHighest: "								# Print out the highest score of each assignment type
+roster.stats_highest
